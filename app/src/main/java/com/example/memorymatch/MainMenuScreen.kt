@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.memorymatch.ui.theme.MemoryMatchTheme
@@ -29,13 +30,27 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(onClick = { selectedPlayers = 1 }) {
+            Button(
+                onClick = { selectedPlayers = 1 },
+                colors = if (selectedPlayers == 1)
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
                 Text("1 hráč")
             }
-            Button(onClick = { selectedPlayers = 2 }) {
+            Button(
+                onClick = { selectedPlayers = 2 },
+                colors = if (selectedPlayers == 2)
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
                 Text("2 hráči")
             }
         }
+
+
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -43,16 +58,37 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(onClick = { selectedGridSize = 4 }) {
+            Button(
+                onClick = { selectedGridSize = 4 },
+                colors = if (selectedGridSize == 4)
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
                 Text("4×4")
             }
-            Button(onClick = { selectedGridSize = 6 }) {
+
+            Button(
+                onClick = { selectedGridSize = 6 },
+                colors = if (selectedGridSize == 6)
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
                 Text("6×6")
             }
-            Button(onClick = { selectedGridSize = 8 }) {
+
+            Button(
+                onClick = { selectedGridSize = 8 },
+                colors = if (selectedGridSize == 8)
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
                 Text("8×8")
             }
         }
+
 
         Spacer(modifier = Modifier.height(32.dp))
 
