@@ -7,10 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.memorymatch.ui.theme.MemoryMatchTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,9 +23,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MemoryMatchTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    AppNavigation(
+                        navController = navController,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -31,17 +36,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = "menu",
         modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MemoryMatchTheme {
-        Greeting("Android")
+    ) {
+        composable("menu") {
+            MainMenuScreen(
+                onStartGame = { players, gridSize ->
+                    navController.navigate("game/$players/$gridSize")
+                }
+            )
+        }
+        composable(
+            route = "game/{players}/{gridSize}",
+            arguments = listOf(
+                navArgument("players") { type = NavType.IntType },
+                navArgument("gridSize") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val players = backStackEntry.arguments?.getInt("players") ?: 1
+            val gridSize = backStackEntry.arguments?.getInt("gridSize") ?: 4
+            GameScreen(
+                players = players,
+                gridSize = gridSize,
+                onBackToMenu = {
+                    navController.navigate("menu") {
+                        popUpTo("menu") { inclusive = true }
+                    }
+                }
+            )
+        }
     }
 }
