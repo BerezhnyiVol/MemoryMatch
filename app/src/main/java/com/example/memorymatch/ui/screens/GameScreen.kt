@@ -1,4 +1,4 @@
-package com.example.memorymatch
+package com.example.memorymatch.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.memorymatch.R
 import com.example.memorymatch.ui.theme.MemoryMatchTheme
 import kotlinx.coroutines.delay
 

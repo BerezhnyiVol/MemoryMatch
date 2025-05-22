@@ -1,6 +1,4 @@
-package com.example.memorymatch
-
-import android.media.browse.MediaBrowser
+package com.example.memorymatch.ui.background
 
 import android.content.Context
 import android.net.Uri
