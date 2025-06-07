@@ -52,6 +52,10 @@ dependencies {
     implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.runtime.android)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,5 +67,10 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+    implementation( "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
+    implementation ("androidx.core:core-ktx:1.10.1")
+
 
 }

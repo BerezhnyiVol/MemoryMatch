@@ -11,17 +11,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.memorymatch.ui.background.VideoBackground
-
+import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
-fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
-    var selectedPlayers by remember { mutableStateOf(1) }
-    var selectedGridSize by remember { mutableStateOf(4) }
+fun MainMenuScreen(onStartGame: (Int, Int) -> Unit, onStatistics: () -> Unit) {
+
+    var selectedPlayers by rememberSaveable { mutableStateOf(1) }
+    var selectedGridSize by rememberSaveable { mutableStateOf(4) }
     val context = LocalContext.current
 
-
     Box(modifier = Modifier.fillMaxSize()) {
-        VideoBackground(modifier = Modifier.fillMaxSize(), context = context)
+        VideoBackground(
+            modifier = Modifier.fillMaxSize(),
+            context = context
+        )
 
         Column(
             modifier = Modifier
@@ -37,15 +40,14 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                 modifier = Modifier.shadow(2.dp)
             )
 
-
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text(text = "Počet hráčov:",
+            Text(
+                text = "Počet hráčov:",
                 fontSize = 30.sp,
                 color = Color.White,
                 modifier = Modifier.shadow(2.dp)
             )
-
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
@@ -60,7 +62,6 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                     else
                         ButtonDefaults.buttonColors()
                 ) {
-
                     Text("1 hráč")
                 }
                 Button(
@@ -77,11 +78,10 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                 }
             }
 
-
-
             Spacer(modifier = Modifier.height(32.dp))
 
-            Text(text = "Veľkosť mriežky:",
+            Text(
+                text = "Veľkosť mriežky:",
                 fontSize = 30.sp,
                 color = Color.White,
                 modifier = Modifier.shadow(2.dp)
@@ -129,23 +129,24 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                 }
             }
 
-
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = { onStartGame(selectedPlayers, selectedGridSize) },
-
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
             ) {
                 Text("Spustiť hru")
             }
+
             Spacer(modifier = Modifier.height(32.dp))
 
-            //statistica
             Button(
-                onClick = { onStartGame(selectedPlayers, selectedGridSize) },
-
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                onClick = { onStatistics() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
             ) {
                 Text("Statistika")
             }

@@ -18,11 +18,16 @@ import androidx.navigation.navArgument
 import com.example.memorymatch.ui.screens.GameScreen
 import com.example.memorymatch.ui.screens.MainMenuScreen
 import com.example.memorymatch.ui.theme.MemoryMatchTheme
+import com.example.memorymatch.navigation.AppNavigation
+import com.example.memorymatch.notification.DailyReminderScheduler
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+
+        DailyReminderScheduler.scheduleDailyReminder(this)
 
         setContent {
             MemoryMatchTheme {
@@ -45,10 +50,14 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         startDestination = "menu",
         modifier = modifier
     ) {
+
         composable("menu") {
             MainMenuScreen(
                 onStartGame = { players, gridSize ->
                     navController.navigate("game/$players/$gridSize")
+                },
+                onStatistics = {
+                    navController.navigate("stats")
                 }
             )
         }

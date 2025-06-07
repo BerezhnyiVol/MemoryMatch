@@ -44,7 +44,12 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     val baseImages = listOf(
         R.drawable.cat, R.drawable.fox, R.drawable.frog,
         R.drawable.koala, R.drawable.monkey, R.drawable.mouse,
-        R.drawable.turtle, R.drawable.turtle
+        R.drawable.turtle, R.drawable.turtle,
+        R.drawable.bee, R.drawable.shark, R.drawable.jellyfish,
+        R.drawable.parrot, R.drawable.snake, R.drawable.penguin,
+        R.drawable.owl, R.drawable.horse,R.drawable.crab, R.drawable.pig, R.drawable.flamingo,
+        R.drawable.hippopotamus, R.drawable.chameleon, R.drawable.ant,
+        R.drawable.tiger, R.drawable.panda,R.drawable.whale
     )
 
     val totalCards = gridSize * gridSize

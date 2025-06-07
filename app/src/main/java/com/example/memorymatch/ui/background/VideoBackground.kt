@@ -10,6 +10,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.media3.common.MediaItem
+import androidx.media3.ui.AspectRatioFrameLayout
 
 @Composable
 fun VideoBackground(modifier: Modifier = Modifier, context: Context) {
@@ -37,7 +38,9 @@ fun VideoBackground(modifier: Modifier = Modifier, context: Context) {
                 player = exoPlayer
                 useController = false
                 layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                alpha = 0.3f // прозрачность видео
+                alpha = 0.3f
+
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
             }
         }
     )
