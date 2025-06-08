@@ -25,7 +25,7 @@ object SoundPlayer {
     fun playWrongPairSound(context: Context) {
         play(context, R.raw.not_ok)
     }
-    fun gameOver(context: Context) {
+    fun playGameOverSound(context: Context) {
         play(context, R.raw.game_over)
     }
 

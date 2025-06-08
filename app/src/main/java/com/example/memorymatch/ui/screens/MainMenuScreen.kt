@@ -23,11 +23,11 @@ import com.example.memorymatch.R
 import com.example.memorymatch.data.LanguagePreferences
 import com.example.memorymatch.data.SoundPlayer
 
-
 @Composable
-fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
+fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
     var selectedPlayers by rememberSaveable { mutableStateOf(1) }
     var selectedGridSize by rememberSaveable { mutableStateOf(4) }
+    var selectedMode by rememberSaveable { mutableStateOf("classic") }
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -39,7 +39,6 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
         )
 
         if (isPortrait) {
-            // Портретная ориентация
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -54,10 +53,9 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 GridSelection(selectedGridSize) { selectedGridSize = it }
                 Spacer(modifier = Modifier.height(32.dp))
-                StartButtons(selectedPlayers, selectedGridSize, onStartGame)
+                StartButtons(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
             }
         } else {
-            // Ландшафтная ориентация — окончательная чистая версия
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -66,7 +64,6 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Title()
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -75,8 +72,7 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
                     PlayerSelection(selectedPlayers) { selectedPlayers = it }
                     GridSelection(selectedGridSize) { selectedGridSize = it }
                 }
-
-                StartButtons(selectedPlayers, selectedGridSize, onStartGame)
+                StartButtons(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
             }
         }
     }
@@ -131,15 +127,17 @@ fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
 fun StartButtons(
     selectedPlayers: Int,
     selectedGridSize: Int,
-    onStartGame: (Int, Int) -> Unit,
+    selectedMode: String,
+    onStartGame: (Int, Int, String) -> Unit,
 ) {
     val context = LocalContext.current
+    var mode by rememberSaveable { mutableStateOf(selectedMode) }
 
     Column {
         Button(
             onClick = {
                 SoundPlayer.playStartSound(context)
-                onStartGame(selectedPlayers, selectedGridSize)
+                onStartGame(selectedPlayers, selectedGridSize, mode)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,8 +146,40 @@ fun StartButtons(
             Text(stringResource(R.string.spustit_hru))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Button(
+                onClick = {
+                    SoundPlayer.playButtonSound(context)
+                    mode = "classic"
+                },
+                colors = if (mode == "classic")
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
+                Text("Классический")
+            }
+
+            Button(
+                onClick = {
+                    SoundPlayer.playButtonSound(context)
+                    mode = "easy"
+                },
+                colors = if (mode == "easy")
+                    ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+                else
+                    ButtonDefaults.buttonColors()
+            ) {
+                Text("Лёгкий")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
         LanguageSwitcher(context)
     }
 }
@@ -194,8 +224,6 @@ fun LanguageSwitcher(context: Context) {
     }
 }
 
-
-
 @Composable
 fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
     val context = LocalContext.current
@@ -204,7 +232,6 @@ fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
             SoundPlayer.playButtonSound(context)
             onClick()
         },
-
         modifier = Modifier
             .width(120.dp)
             .height(50.dp),

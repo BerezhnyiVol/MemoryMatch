@@ -40,7 +40,7 @@ data class CardData(
 )
 
 @Composable
-fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
+fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Unit) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -92,8 +92,14 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        if (mode == "easy") {
+            cardsState = cardsState.map { it.copy(isRevealed = true) }
+            delay(3000)
+            cardsState = cardsState.map { it.copy(isRevealed = false) }
+        }
         gameStarted = true
     }
+
 
     LaunchedEffect(gameStarted, players, gameOver) {
         if ( gameStarted && !gameOver) {
@@ -133,7 +139,7 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
             revealed = emptyList()
             if (cardsState.all { it.isMatched }) {
                 gameOver = true
-                SoundPlayer.gameOver(context)
+                SoundPlayer.playGameOverSound(context)
             }
         }
     }

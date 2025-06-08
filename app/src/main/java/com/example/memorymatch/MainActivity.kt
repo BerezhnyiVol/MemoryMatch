@@ -72,26 +72,30 @@ fun AppNavigation(navController: NavHostController, modifier: Modifier = Modifie
         startDestination = "menu",
         modifier = modifier
     ) {
-
-        composable("menu") {
+        composable(route = "menu") {
             MainMenuScreen(
-                onStartGame = { players, gridSize ->
-                    navController.navigate("game/$players/$gridSize")
-                },
+                onStartGame = { players, gridSize, mode ->
+                    navController.navigate("game/$players/$gridSize/$mode")
+                }
             )
         }
+
         composable(
-            route = "game/{players}/{gridSize}",
+            route = "game/{players}/{gridSize}/{mode}",
             arguments = listOf(
                 navArgument("players") { type = NavType.IntType },
-                navArgument("gridSize") { type = NavType.IntType }
+                navArgument("gridSize") { type = NavType.IntType },
+                navArgument("mode") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val players = backStackEntry.arguments?.getInt("players") ?: 1
             val gridSize = backStackEntry.arguments?.getInt("gridSize") ?: 4
+            val mode = backStackEntry.arguments?.getString("mode") ?: "classic"
+
             GameScreen(
                 players = players,
                 gridSize = gridSize,
+                mode = mode,
                 onBackToMenu = {
                     navController.navigate("menu") {
                         popUpTo("menu") { inclusive = true }
