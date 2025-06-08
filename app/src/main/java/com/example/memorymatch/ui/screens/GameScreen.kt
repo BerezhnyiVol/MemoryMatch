@@ -160,6 +160,11 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(text = stringResource(R.string.cas) + " ${elapsedTime}s", fontSize = 18.sp)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "|")
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(text = stringResource(R.string.attempts) + " ${attempts}s", fontSize = 18.sp)
 
             Spacer(modifier = Modifier.weight(1f))
 

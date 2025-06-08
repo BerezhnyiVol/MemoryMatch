@@ -16,4 +16,6 @@
     <string name="player_2_wins"> Player 2 Wins!</string>
     <string name="draw"> Draw!</string>
     <string name="back_to_menu">Back to Menu</string>
+    <string name="notification_text">Je čas trénovať pamäť — príď si zahrať!</string>
+    <string name="notification_text1">notification_text</string>
 </resources>

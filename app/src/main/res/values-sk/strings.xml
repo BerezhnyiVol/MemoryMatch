@@ -17,4 +17,5 @@
     <string name="player_2_wins">Hráč 2 vyhráva!</string>
     <string name="draw">Remiza!</string>
     <string name="back_to_menu">Späť do menu</string>
+    <string name="notification_text">Je čas trénovať pamäť — príď si zahrať!</string>
 </resources>
