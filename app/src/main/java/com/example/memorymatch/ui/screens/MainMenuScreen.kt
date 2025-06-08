@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.memorymatch.R
 import com.example.memorymatch.data.LanguagePreferences
+import com.example.memorymatch.data.SoundPlayer
+
 
 @Composable
 fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
@@ -135,7 +137,10 @@ fun StartButtons(
 
     Column {
         Button(
-            onClick = { onStartGame(selectedPlayers, selectedGridSize) },
+            onClick = {
+                SoundPlayer.playStartSound(context)
+                onStartGame(selectedPlayers, selectedGridSize)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
@@ -148,8 +153,10 @@ fun StartButtons(
         LanguageSwitcher(context)
     }
 }
+
 @Composable
 fun LanguageSwitcher(context: Context) {
+    val context = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
@@ -164,6 +171,7 @@ fun LanguageSwitcher(context: Context) {
         ) {
             Button(
                 onClick = {
+                    SoundPlayer.playButtonSound(context)
                     LanguagePreferences.saveLanguage(context, "sk")
                     (context as Activity).recreate()
                 },
@@ -174,6 +182,7 @@ fun LanguageSwitcher(context: Context) {
 
             Button(
                 onClick = {
+                    SoundPlayer.playButtonSound(context)
                     LanguagePreferences.saveLanguage(context, "en")
                     (context as Activity).recreate()
                 },
@@ -189,8 +198,13 @@ fun LanguageSwitcher(context: Context) {
 
 @Composable
 fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
+    val context = LocalContext.current
     Button(
-        onClick = onClick,
+        onClick = {
+            SoundPlayer.playButtonSound(context)
+            onClick()
+        },
+
         modifier = Modifier
             .width(120.dp)
             .height(50.dp),
@@ -205,8 +219,12 @@ fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
 
 @Composable
 fun GridButton(size: Int, selected: Int, onClick: () -> Unit) {
+    val context = LocalContext.current
     Button(
-        onClick = onClick,
+        onClick = {
+            SoundPlayer.playButtonSound(context)
+            onClick()
+        },
         modifier = Modifier
             .width(120.dp)
             .height(50.dp),
