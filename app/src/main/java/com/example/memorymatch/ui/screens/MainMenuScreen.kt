@@ -215,6 +215,6 @@ fun GridButton(size: Int, selected: Int, onClick: () -> Unit) {
         else
             ButtonDefaults.buttonColors()
     ) {
-        Text("${size}×${size}")
+        Text("4×$size")
     }
 }
