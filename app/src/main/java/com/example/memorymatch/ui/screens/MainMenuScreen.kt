@@ -33,17 +33,11 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Box(modifier = Modifier.fillMaxSize()) {
-        VideoBackground(
-            modifier = Modifier.fillMaxSize(),
-            context = context
-        )
+        VideoBackground(modifier = Modifier.fillMaxSize(), context = context)
 
         if (isPortrait) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -55,17 +49,18 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 ModeSelection(selectedMode) { selectedMode = it }
                 Spacer(modifier = Modifier.height(32.dp))
-                StartButtons(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
+                LanguageSwitcher(context)
+                Spacer(modifier = Modifier.height(32.dp))
+                StartButton(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
             }
         } else {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(16.dp),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Title()
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -74,8 +69,17 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
                     PlayerSelection(selectedPlayers) { selectedPlayers = it }
                     GridSelection(selectedGridSize) { selectedGridSize = it }
                 }
-                ModeSelection(selectedMode) { selectedMode = it }
-                StartButtons(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ModeSelection(selectedMode) { selectedMode = it }
+                    LanguageSwitcher(context)
+                }
+
+                StartButton(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
             }
         }
     }
@@ -83,23 +87,13 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
 
 @Composable
 fun Title() {
-    Text(
-        text = stringResource(R.string.memory_match),
-        fontSize = 50.sp,
-        color = Color.White,
-        modifier = Modifier.shadow(2.dp)
-    )
+    Text(text = stringResource(R.string.memory_match), fontSize = 50.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
 }
 
 @Composable
 fun PlayerSelection(selected: Int, onSelect: (Int) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = stringResource(R.string.pocet_hracov),
-            fontSize = 30.sp,
-            color = Color.White,
-            modifier = Modifier.shadow(2.dp)
-        )
+        Text(text = stringResource(R.string.pocet_hracov), fontSize = 30.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             PlayerButton(1, selected) { onSelect(1) }
@@ -111,12 +105,7 @@ fun PlayerSelection(selected: Int, onSelect: (Int) -> Unit) {
 @Composable
 fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = stringResource(R.string.velkost_mriezky),
-            fontSize = 30.sp,
-            color = Color.White,
-            modifier = Modifier.shadow(2.dp)
-        )
+        Text(text = stringResource(R.string.velkost_mriezky), fontSize = 30.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             GridButton(4, selected) { onSelect(4) }
@@ -130,12 +119,7 @@ fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
 fun ModeSelection(selected: String, onSelect: (String) -> Unit) {
     val context = LocalContext.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = "Game Mode",
-            fontSize = 30.sp,
-            color = Color.White,
-            modifier = Modifier.shadow(2.dp)
-        )
+        Text(text = "Game Mode", fontSize = 30.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ModeButton("classic", selected, context) { onSelect("classic") }
@@ -146,89 +130,48 @@ fun ModeSelection(selected: String, onSelect: (String) -> Unit) {
 
 @Composable
 fun ModeButton(mode: String, selected: String, context: Context, onClick: () -> Unit) {
-    val buttonText = when (mode) {
-        "classic" -> "Classic"
-        "easy" -> "Easy"
-        else -> mode
-    }
+    val buttonText = if (mode == "classic") "Classic" else "Easy"
     Button(
-        onClick = {
-            SoundPlayer.playButtonSound(context)
-            onClick()
-        },
-        modifier = Modifier
-            .width(120.dp)
-            .height(50.dp),
-        colors = if (mode == selected)
-            ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
-        else
-            ButtonDefaults.buttonColors()
+        onClick = { SoundPlayer.playButtonSound(context); onClick() },
+        modifier = Modifier.width(120.dp).height(50.dp),
+        colors = if (mode == selected) ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)) else ButtonDefaults.buttonColors()
     ) {
         Text(buttonText)
     }
 }
 
 @Composable
-fun StartButtons(
-    selectedPlayers: Int,
-    selectedGridSize: Int,
-    selectedMode: String,
-    onStartGame: (Int, Int, String) -> Unit,
-) {
-    val context = LocalContext.current
-
-    Column {
-        Button(
-            onClick = {
-                SoundPlayer.playStartSound(context)
-                onStartGame(selectedPlayers, selectedGridSize, selectedMode)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text(stringResource(R.string.spustit_hru))
+fun LanguageSwitcher(context: Context) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(stringResource(R.string.language), color = Color.White)
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            LanguageButton(context, "sk", "🇸🇰 SK")
+            LanguageButton(context, "en", "🇬🇧 EN")
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        LanguageSwitcher(context)
     }
 }
 
 @Composable
-fun LanguageSwitcher(context: Context) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(stringResource(R.string.language), color = Color.White)
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    SoundPlayer.playButtonSound(context)
-                    LanguagePreferences.saveLanguage(context, "sk")
-                    (context as Activity).recreate()
-                },
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text("🇸🇰 SK")
-            }
+fun LanguageButton(context: Context, lang: String, label: String) {
+    Button(
+        onClick = {
+            SoundPlayer.playButtonSound(context)
+            LanguagePreferences.saveLanguage(context, lang)
+            (context as Activity).recreate()
+        },
+        modifier = Modifier.width(100.dp).height(50.dp)
+    ) { Text(label) }
+}
 
-            Button(
-                onClick = {
-                    SoundPlayer.playButtonSound(context)
-                    LanguagePreferences.saveLanguage(context, "en")
-                    (context as Activity).recreate()
-                },
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text("🇬🇧 EN")
-            }
-        }
+@Composable
+fun StartButton(selectedPlayers: Int, selectedGridSize: Int, selectedMode: String, onStartGame: (Int, Int, String) -> Unit) {
+    val context = LocalContext.current
+    Button(
+        onClick = { SoundPlayer.playStartSound(context); onStartGame(selectedPlayers, selectedGridSize, selectedMode) },
+        modifier = Modifier.fillMaxWidth().height(50.dp)
+    ) {
+        Text(stringResource(R.string.spustit_hru))
     }
 }
 
@@ -236,17 +179,9 @@ fun LanguageSwitcher(context: Context) {
 fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
     val context = LocalContext.current
     Button(
-        onClick = {
-            SoundPlayer.playButtonSound(context)
-            onClick()
-        },
-        modifier = Modifier
-            .width(120.dp)
-            .height(50.dp),
-        colors = if (player == selected)
-            ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
-        else
-            ButtonDefaults.buttonColors()
+        onClick = { SoundPlayer.playButtonSound(context); onClick() },
+        modifier = Modifier.width(120.dp).height(50.dp),
+        colors = if (player == selected) ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)) else ButtonDefaults.buttonColors()
     ) {
         Text("$player" + stringResource(R.string.hrac) + if (player == 2) "i" else "")
     }
@@ -256,17 +191,9 @@ fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
 fun GridButton(size: Int, selected: Int, onClick: () -> Unit) {
     val context = LocalContext.current
     Button(
-        onClick = {
-            SoundPlayer.playButtonSound(context)
-            onClick()
-        },
-        modifier = Modifier
-            .width(120.dp)
-            .height(50.dp),
-        colors = if (size == selected)
-            ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
-        else
-            ButtonDefaults.buttonColors()
+        onClick = { SoundPlayer.playButtonSound(context); onClick() },
+        modifier = Modifier.width(120.dp).height(50.dp),
+        colors = if (size == selected) ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)) else ButtonDefaults.buttonColors()
     ) {
         Text("4×$size")
     }
