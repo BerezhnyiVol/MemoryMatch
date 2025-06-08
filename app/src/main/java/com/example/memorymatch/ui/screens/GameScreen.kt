@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.memorymatch.R
+import com.example.memorymatch.data.SoundPlayer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -87,6 +89,7 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     var elapsedTime by remember { mutableStateOf(0) }
     var attempts by remember { mutableStateOf(0) }
     var gameStarted by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         gameStarted = true
@@ -108,6 +111,7 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
             val second = revealed[1]
             delay(600)
             if (cardsState[first].imageResId == cardsState[second].imageResId) {
+                SoundPlayer.playCorrectPairSound(context)
                 cardsState = cardsState.mapIndexed { i, card ->
                     if (i == first || i == second)
                         card.copy(isMatched = true, isRevealed = true)
@@ -117,6 +121,7 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
                     if (currentPlayer == 1) p1Score++ else p2Score++
                 }
             } else {
+                SoundPlayer.playWrongPairSound(context)
                 cardsState = cardsState.mapIndexed { i, card ->
                     if (i == first || i == second) card.copy(isRevealed = false)
                     else card
@@ -126,7 +131,10 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
                 }
             }
             revealed = emptyList()
-            if (cardsState.all { it.isMatched }) gameOver = true
+            if (cardsState.all { it.isMatched }) {
+                gameOver = true
+                SoundPlayer.gameOver(context)
+            }
         }
     }
 
@@ -200,6 +208,7 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
                 },
                 confirmButton = {
                     Button(onClick = { onBackToMenu() }) {
+                        SoundPlayer.playButtonSound(context)
                         Text(stringResource(R.string.back_to_menu))
                     }
                 }
@@ -223,6 +232,7 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
                     cardSize = cardSize,
                     onClick = {
                         if (!card.isRevealed && !card.isMatched && revealed.size < 2) {
+                            SoundPlayer.playCardFlipSound(context)
                             cardsState = cardsState.toMutableList().apply {
                                 this[index] = this[index].copy(isRevealed = true)
                             }
