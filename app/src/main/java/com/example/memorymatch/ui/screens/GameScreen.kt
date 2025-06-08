@@ -67,10 +67,10 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
 
     val baseImages = listOf(
         R.drawable.cat, R.drawable.fox, R.drawable.frog, R.drawable.koala, R.drawable.monkey,
-        R.drawable.mouse, R.drawable.turtle, R.drawable.bee, R.drawable.shark,
-        R.drawable.jellyfish, R.drawable.parrot, R.drawable.snake, R.drawable.penguin, R.drawable.owl,
-        R.drawable.horse, R.drawable.crab, R.drawable.pig, R.drawable.flamingo, R.drawable.hippopotamus,
-        R.drawable.chameleon, R.drawable.ant, R.drawable.tiger, R.drawable.panda, R.drawable.whale
+        R.drawable.mouse, R.drawable.jellyfish, R.drawable.parrot,
+        R.drawable.penguin, R.drawable.owl,
+        R.drawable.horse, R.drawable.crab, R.drawable.flamingo, R.drawable.hippopotamus,
+        R.drawable.chameleon, R.drawable.panda,
     )
 
     val totalCards = columns * rows
@@ -131,6 +131,21 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        val contentScale = if (orientation == Configuration.ORIENTATION_PORTRAIT)
+            ContentScale.Crop
+        else
+            ContentScale.FillHeight
+
+        Image(
+            painter = painterResource(id = R.drawable.game_background),
+            contentDescription = null,
+            contentScale = contentScale,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF0D1B2A).copy(alpha = 0.15f))
+
+
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -236,7 +251,7 @@ fun MemoryCard(
     ) {
         Box(
             modifier = Modifier
-                .background(Color.LightGray)
+                .background(Color(0xFF0D1B2A).copy(alpha = 0.03f))
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {

@@ -12,7 +12,7 @@ object DailyReminderScheduler {
 
     fun scheduleDailyReminder(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<DailyReminderWorker>(
-            1, TimeUnit.MINUTES
+            15, TimeUnit.MINUTES
         )
             .build()
 
