@@ -1,5 +1,6 @@
 package com.example.memorymatch.ui.screens
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -8,7 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,13 +23,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.memorymatch.R
-import com.example.memorymatch.ui.theme.MemoryMatchTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 data class CardData(
     val imageResId: Int,
@@ -35,24 +38,41 @@ data class CardData(
 
 @Composable
 fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
+    val orientation = configuration.orientation
+
     val spacing = 8.dp
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val cardSize = with(LocalDensity.current) {
-        (screenWidth - (spacing * (gridSize + 1))) / gridSize
+    val sizeReductionFactor = 0.85f
+
+    val columns: Int
+    val rows: Int
+
+    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        columns = 4
+        rows = gridSize
+    } else {
+        columns = gridSize
+        rows = 4
+    }
+
+    val availableWidth = screenWidth - (spacing * (columns + 1))
+    val availableHeight = screenHeight - (spacing * (rows + 1))
+
+    val cardSize: Dp = with(LocalDensity.current) {
+        minOf(availableWidth / columns, availableHeight / rows) * sizeReductionFactor
     }
 
     val baseImages = listOf(
-        R.drawable.cat, R.drawable.fox, R.drawable.frog,
-        R.drawable.koala, R.drawable.monkey, R.drawable.mouse,
-        R.drawable.turtle, R.drawable.turtle,
-        R.drawable.bee, R.drawable.shark, R.drawable.jellyfish,
-        R.drawable.parrot, R.drawable.snake, R.drawable.penguin,
-        R.drawable.owl, R.drawable.horse,R.drawable.crab, R.drawable.pig, R.drawable.flamingo,
-        R.drawable.hippopotamus, R.drawable.chameleon, R.drawable.ant,
-        R.drawable.tiger, R.drawable.panda,R.drawable.whale
+        R.drawable.cat, R.drawable.fox, R.drawable.frog, R.drawable.koala, R.drawable.monkey,
+        R.drawable.mouse, R.drawable.turtle, R.drawable.bee, R.drawable.shark,
+        R.drawable.jellyfish, R.drawable.parrot, R.drawable.snake, R.drawable.penguin, R.drawable.owl,
+        R.drawable.horse, R.drawable.crab, R.drawable.pig, R.drawable.flamingo, R.drawable.hippopotamus,
+        R.drawable.chameleon, R.drawable.ant, R.drawable.tiger, R.drawable.panda, R.drawable.whale
     )
 
-    val totalCards = gridSize * gridSize
+    val totalCards = columns * rows
     val neededPairs = totalCards / 2
     val images = generateSequence { baseImages }.flatten().take(neededPairs).toList()
     val allCards = (images + images).shuffled()
@@ -63,9 +83,21 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     var p1Score by remember { mutableStateOf(0) }
     var p2Score by remember { mutableStateOf(0) }
     var gameOver by remember { mutableStateOf(false) }
+    var elapsedTime by remember { mutableStateOf(0) }
+    var attempts by remember { mutableStateOf(0) }
+
+    LaunchedEffect(players, gameOver) {
+        if (players == 1 && !gameOver) {
+            while (isActive) {
+                delay(1000)
+                elapsedTime++
+            }
+        }
+    }
 
     LaunchedEffect(revealed) {
         if (revealed.size == 2) {
+            attempts++
             val first = revealed[0]
             val second = revealed[1]
             delay(600)
@@ -92,66 +124,80 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Memory Match", fontSize = 32.sp)
-        Spacer(modifier = Modifier.height(16.dp))
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Верхняя панель
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .align(Alignment.TopCenter),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackToMenu) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Späť")
+            }
 
-        if (gameOver) {
+            Spacer(modifier = Modifier.width(8.dp))
+
             Text(
-                text = when {
-                    players == 1 -> "🎉 Gratulujeme!"
-                    p1Score > p2Score -> "🎉 Vyhral hráč 1!"
-                    p2Score > p1Score -> "🎉 Vyhral hráč 2!"
-                    else -> "🤝 Remíza!"
-                },
-                fontSize = 24.sp
+                text = "Čas: ${elapsedTime}s",
+                fontSize = 18.sp
             )
-            if (players == 2) {
-                Text("Hráč 1: $p1Score | Hráč 2: $p2Score")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = onBackToMenu) {
-                Text("Späť do menu")
-            }
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(gridSize),
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(spacing),
-                verticalArrangement = Arrangement.spacedBy(spacing)
-            ) {
-                items(cardsState.size) { index ->
-                    val card = cardsState[index]
-                    MemoryCard(
-                        imageResId = card.imageResId,
-                        isRevealed = card.isRevealed,
-                        isMatched = card.isMatched,
-                        cardSize = cardSize,
-                        onClick = {
-                            if (!card.isRevealed && !card.isMatched && revealed.size < 2) {
-                                cardsState = cardsState.toMutableList().apply {
-                                    this[index] = this[index].copy(isRevealed = true)
-                                }
-                                revealed = revealed + index
-                            }
-                        }
-                    )
-                }
-            }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             if (players == 2) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Hráč 1: $p1Score bodov | Hráč 2: $p2Score bodov")
-                Text("Na ťahu: Hráč $currentPlayer")
+                Text(
+                    text = "Hráč 1 = $p1Score bodov | Hráč 2 = $p2Score bodov",
+                    fontSize = 16.sp
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onBackToMenu) {
-            Text("Späť do menu")
+        // Плашка результата после окончания игры
+        if (gameOver) {
+            Column(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 56.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (players == 1) {
+                    Text("🎉 Gratulujeme!", fontSize = 22.sp)
+                    Text("Čas: ${elapsedTime} sekúnd", fontSize = 18.sp)
+                    Text("Počet pokusov: $attempts", fontSize = 18.sp)
+                } else {
+                    val winnerText = when {
+                        p1Score > p2Score -> "🎉 Vyhral hráč 1!"
+                        p2Score > p1Score -> "🎉 Vyhral hráč 2!"
+                        else -> "🤝 Remíza!"
+                    }
+                    Text(winnerText, fontSize = 22.sp)
+                }
+            }
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columns),
+            modifier = Modifier.fillMaxSize().padding(top = 56.dp),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            verticalArrangement = Arrangement.spacedBy(spacing)
+        ) {
+            items(cardsState.size) { index ->
+                val card = cardsState[index]
+                MemoryCard(
+                    imageResId = card.imageResId,
+                    isRevealed = card.isRevealed,
+                    isMatched = card.isMatched,
+                    cardSize = cardSize,
+                    onClick = {
+                        if (!card.isRevealed && !card.isMatched && revealed.size < 2) {
+                            cardsState = cardsState.toMutableList().apply {
+                                this[index] = this[index].copy(isRevealed = true)
+                            }
+                            revealed = revealed + index
+                        }
+                    }
+                )
+            }
         }
     }
 }
@@ -164,20 +210,14 @@ fun MemoryCard(
     cardSize: Dp,
     onClick: () -> Unit
 ) {
-    val rotation by animateFloatAsState(
-        targetValue = if (isRevealed || isMatched) 180f else 0f,
-        label = "flip"
-    )
+    val rotation by animateFloatAsState(targetValue = if (isRevealed || isMatched) 180f else 0f, label = "")
     val showFront = rotation > 90f
     val density = LocalDensity.current
 
     Card(
         modifier = Modifier
             .size(cardSize)
-            .graphicsLayer {
-                rotationY = rotation
-                cameraDistance = 8 * density.density
-            }
+            .graphicsLayer { rotationY = rotation; cameraDistance = 8 * density.density }
             .clickable(enabled = !isRevealed && !isMatched) { onClick() },
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(2.dp, Color.Gray)
@@ -193,24 +233,12 @@ fun MemoryCard(
                 showFront -> imageResId
                 else -> R.drawable.card
             }
-
             Image(
                 painter = painterResource(id = image),
                 contentDescription = null,
                 contentScale = ContentScale.Inside,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
+                modifier = Modifier.fillMaxSize().padding(8.dp)
             )
-
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GameScreenPreview() {
-    MemoryMatchTheme {
-        GameScreen(players = 1, gridSize = 4, onBackToMenu = {})
     }
 }
