@@ -33,12 +33,14 @@ import com.example.memorymatch.data.SoundPlayer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
+// Popis: Dátová trieda reprezentujúca jednu kartu v hre
 data class CardData(
     val imageResId: Int,
     val isRevealed: Boolean = false,
     val isMatched: Boolean = false
 )
 
+// Popis: Hlavná obrazovka hry s logikou pre dvojhru, skóre a herný režim
 @Composable
 fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Unit) {
     val configuration = LocalConfiguration.current
@@ -49,6 +51,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
     val spacing = 8.dp
     val sizeReductionFactor = 0.85f
 
+    // Popis: Výpočet rozmerov mriežky podľa orientácie zariadenia
     val columns: Int
     val rows: Int
 
@@ -67,12 +70,13 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
         minOf(availableWidth / columns, availableHeight / rows) * sizeReductionFactor
     }
 
+    // Popis: Príprava obrázkov a zamiešanie kariet
     val baseImages = listOf(
         R.drawable.cat, R.drawable.fox, R.drawable.frog, R.drawable.koala, R.drawable.monkey,
         R.drawable.mouse, R.drawable.jellyfish, R.drawable.parrot,
         R.drawable.penguin, R.drawable.owl,
         R.drawable.horse, R.drawable.crab, R.drawable.flamingo, R.drawable.hippopotamus,
-        R.drawable.chameleon, R.drawable.panda,
+        R.drawable.chameleon, R.drawable.panda
     )
 
     val totalCards = columns * rows
@@ -80,6 +84,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
     val images = generateSequence { baseImages }.flatten().take(neededPairs).toList()
     val allCards = (images + images).shuffled()
 
+    // Popis: Stavové premenne hry
     var cardsState by remember { mutableStateOf(allCards.map { CardData(it) }) }
     var revealed by remember { mutableStateOf<List<Int>>(emptyList()) }
     var currentPlayer by remember { mutableStateOf(1) }
@@ -91,6 +96,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
     var gameStarted by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    // Popis: Easy mód - krátke odhalenie všetkých kariet na začiatku
     LaunchedEffect(Unit) {
         if (mode == "easy") {
             cardsState = cardsState.map { it.copy(isRevealed = true) }
@@ -100,9 +106,9 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
         gameStarted = true
     }
 
-
+    // Popis: Počítanie času počas hry
     LaunchedEffect(gameStarted, players, gameOver) {
-        if ( gameStarted && !gameOver) {
+        if (gameStarted && !gameOver) {
             while (isActive) {
                 delay(1000)
                 elapsedTime++
@@ -110,6 +116,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
         }
     }
 
+    // Popis: Herná logika pri odhalení páru kariet
     LaunchedEffect(revealed) {
         if (revealed.size == 2) {
             attempts++
@@ -119,9 +126,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
             if (cardsState[first].imageResId == cardsState[second].imageResId) {
                 SoundPlayer.playCorrectPairSound(context)
                 cardsState = cardsState.mapIndexed { i, card ->
-                    if (i == first || i == second)
-                        card.copy(isMatched = true, isRevealed = true)
-                    else card
+                    if (i == first || i == second) card.copy(isMatched = true, isRevealed = true) else card
                 }
                 if (players == 2) {
                     if (currentPlayer == 1) p1Score++ else p2Score++
@@ -129,8 +134,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
             } else {
                 SoundPlayer.playWrongPairSound(context)
                 cardsState = cardsState.mapIndexed { i, card ->
-                    if (i == first || i == second) card.copy(isRevealed = false)
-                    else card
+                    if (i == first || i == second) card.copy(isRevealed = false) else card
                 }
                 if (players == 2) {
                     currentPlayer = if (currentPlayer == 1) 2 else 1
@@ -144,11 +148,11 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
         }
     }
 
+    // Popis: Celá hlavná obrazovka
     Box(modifier = Modifier.fillMaxSize()) {
+
         val contentScale = if (orientation == Configuration.ORIENTATION_PORTRAIT)
-            ContentScale.Crop
-        else
-            ContentScale.FillHeight
+            ContentScale.Crop else ContentScale.FillHeight
 
         Image(
             painter = painterResource(id = R.drawable.game_background),
@@ -157,9 +161,9 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF0D1B2A).copy(alpha = 0.15f))
-
-
         )
+
+        // Popis: Horný panel so skóre a časom
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -170,17 +174,12 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
             IconButton(onClick = onBackToMenu) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back")
             }
-
             Spacer(modifier = Modifier.width(8.dp))
-
             Text(text = stringResource(R.string.cas) + " ${elapsedTime}s", fontSize = 18.sp)
             Spacer(modifier = Modifier.width(8.dp))
-
             Text(text = "|")
             Spacer(modifier = Modifier.width(8.dp))
-
-            Text(text = stringResource(R.string.attempts) + " ${attempts}s", fontSize = 18.sp)
-
+            Text(text = stringResource(R.string.attempts) + " $attempts", fontSize = 18.sp)
             Spacer(modifier = Modifier.weight(1f))
 
             if (players == 2) {
@@ -193,6 +192,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
             }
         }
 
+        // Popis: Zobrazenie dialógu po skončení hry
         if (gameOver) {
             AlertDialog(
                 onDismissRequest = { onBackToMenu() },
@@ -221,6 +221,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
             )
         }
 
+        // Popis: Hlavná mriežka kariet
         LazyVerticalGrid(
             columns = GridCells.Fixed(columns),
             modifier = Modifier
@@ -251,6 +252,7 @@ fun GameScreen(players: Int, gridSize: Int, mode: String, onBackToMenu: () -> Un
     }
 }
 
+// Popis: Komponent reprezentujúci jednu kartu v mriežke
 @Composable
 fun MemoryCard(
     imageResId: Int,

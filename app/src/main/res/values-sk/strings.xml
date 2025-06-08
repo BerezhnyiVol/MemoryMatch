@@ -18,4 +18,13 @@
     <string name="draw">Remiza!</string>
     <string name="back_to_menu">Späť do menu</string>
     <string name="notification_text">Je čas trénovať pamäť — príď si zahrať!</string>
+    <string name="classic">klasický</string>
+    <string name="easy">ľahky</string>
+    <string name="classic_button">Klasický</string>
+    <string name="easy_button">Lahky</string>
+    <string name="sk">sk</string>
+    <string name="en">en</string>
+    <string name="sk_sk">🇸🇰 SK</string>
+    <string name="en_gb">🇬🇧 EN</string>
+    <string name="game_mode">Herný režim</string>
 </resources>

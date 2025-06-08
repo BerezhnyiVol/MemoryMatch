@@ -6,19 +6,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import java.util.*
 
+// Popis: Trieda zabezpečujúca naplánovanie denného pripomenutia pomocou AlarmManager
 object DailyReminderScheduler {
 
+    // Popis: Naplánuje denné pripomenutie na nasledujúcich 12 hodín
     fun scheduleDailyReminder(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
-                Log.d("DailyReminder", "Exact alarm permission not granted, requesting...")
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 context.startActivity(intent)
@@ -44,7 +42,5 @@ object DailyReminderScheduler {
             calendar.timeInMillis,
             pendingIntent
         )
-
-        Log.d("DailyReminder", "Alarm scheduled for ${calendar.time}")
     }
 }

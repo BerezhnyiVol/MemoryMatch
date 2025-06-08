@@ -7,26 +7,27 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.memorymatch.MainActivity
 import com.example.memorymatch.R
 
+// Popis: BroadcastReceiver pre zobrazovanie denného pripomenutia pomocou notifikácie
 class DailyReminderReceiver : BroadcastReceiver() {
 
+    // Popis: Identifikátory kanála a notifikácie
     companion object {
         private const val CHANNEL_ID = "daily_reminder_channel"
         private const val NOTIFICATION_ID = 1
     }
 
+    // Popis: Spracovanie prijatej udalosti a zobrazenie notifikácie
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("DailyReminder", "Receiver triggered!")
-
         if (context != null) {
             showNotification(context)
         }
     }
 
+    // Popis: Zobrazenie notifikácie pre používateľa
     private fun showNotification(context: Context) {
         createNotificationChannel(context)
 
@@ -52,10 +53,9 @@ class DailyReminderReceiver : BroadcastReceiver() {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.notify(NOTIFICATION_ID, builder.build())
-
-        Log.d("DailyReminder", "Notification shown")
     }
 
+    // Popis: Vytvorenie notifikačného kanála pre Android 8.0 a vyššie
     private fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Daily Reminder"

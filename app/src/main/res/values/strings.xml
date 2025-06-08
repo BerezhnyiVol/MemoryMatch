@@ -17,4 +17,13 @@
     <string name="draw"> Draw!</string>
     <string name="back_to_menu">Back to Menu</string>
     <string name="notification_text">Je čas trénovať pamäť — príď si zahrať!</string>
+    <string name="classic">classic</string>
+    <string name="easy">easy</string>
+    <string name="classic_button">Classic</string>
+    <string name="easy_button">Easy</string>
+    <string name="sk">sk</string>
+    <string name="en">en</string>
+    <string name="sk_sk">🇸🇰 SK</string>
+    <string name="en_gb">🇬🇧 EN</string>
+    <string name="game_mode">Game Mode</string>
 </resources>

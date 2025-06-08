@@ -23,6 +23,7 @@ import com.example.memorymatch.R
 import com.example.memorymatch.data.LanguagePreferences
 import com.example.memorymatch.data.SoundPlayer
 
+// Popis: Hlavná obrazovka hlavného menu s výberom nastavení hry
 @Composable
 fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
     var selectedPlayers by rememberSaveable { mutableStateOf(1) }
@@ -33,11 +34,16 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Box(modifier = Modifier.fillMaxSize()) {
+        // Popis: Animované video na pozadí hlavného menu
         VideoBackground(modifier = Modifier.fillMaxSize(), context = context)
 
         if (isPortrait) {
+            // Popis: Rozloženie pre vertikálnu orientáciu
             Column(
-                modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -54,8 +60,11 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
                 StartButton(selectedPlayers, selectedGridSize, selectedMode, onStartGame)
             }
         } else {
+            // Popis: Rozloženie pre horizontálnu orientáciu
             Column(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -85,15 +94,27 @@ fun MainMenuScreen(onStartGame: (Int, Int, String) -> Unit) {
     }
 }
 
+// Popis: Názov aplikácie v menu
 @Composable
 fun Title() {
-    Text(text = stringResource(R.string.memory_match), fontSize = 50.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
+    Text(
+        text = stringResource(R.string.memory_match),
+        fontSize = 50.sp,
+        color = Color.White,
+        modifier = Modifier.shadow(2.dp)
+    )
 }
 
+// Popis: Výber počtu hráčov
 @Composable
 fun PlayerSelection(selected: Int, onSelect: (Int) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = stringResource(R.string.pocet_hracov), fontSize = 30.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
+        Text(
+            text = stringResource(R.string.pocet_hracov),
+            fontSize = 30.sp,
+            color = Color.White,
+            modifier = Modifier.shadow(2.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             PlayerButton(1, selected) { onSelect(1) }
@@ -102,10 +123,16 @@ fun PlayerSelection(selected: Int, onSelect: (Int) -> Unit) {
     }
 }
 
+// Popis: Výber veľkosti mriežky
 @Composable
 fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = stringResource(R.string.velkost_mriezky), fontSize = 30.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
+        Text(
+            text = stringResource(R.string.velkost_mriezky),
+            fontSize = 30.sp,
+            color = Color.White,
+            modifier = Modifier.shadow(2.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             GridButton(4, selected) { onSelect(4) }
@@ -115,43 +142,58 @@ fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
     }
 }
 
+// Popis: Výber herného módu
 @Composable
 fun ModeSelection(selected: String, onSelect: (String) -> Unit) {
     val context = LocalContext.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Game Mode", fontSize = 30.sp, color = Color.White, modifier = Modifier.shadow(2.dp))
+        Text(
+            text = stringResource(R.string.game_mode),
+            fontSize = 30.sp,
+            color = Color.White,
+            modifier = Modifier.shadow(2.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ModeButton("classic", selected, context) { onSelect("classic") }
-            ModeButton("easy", selected, context) { onSelect("easy") }
+            ModeButton(stringResource(R.string.classic), selected, context) { onSelect("classic") }
+            ModeButton(stringResource(R.string.easy), selected, context) { onSelect("easy") }
         }
     }
 }
 
+// Popis: Tlačidlo pre výber módu
 @Composable
 fun ModeButton(mode: String, selected: String, context: Context, onClick: () -> Unit) {
-    val buttonText = if (mode == "classic") "Classic" else "Easy"
+    val buttonText = if (mode == "classic") stringResource(R.string.classic_button)
+    else stringResource(R.string.easy_button)
+
     Button(
         onClick = { SoundPlayer.playButtonSound(context); onClick() },
-        modifier = Modifier.width(120.dp).height(50.dp),
-        colors = if (mode == selected) ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)) else ButtonDefaults.buttonColors()
+        modifier = Modifier
+            .width(120.dp)
+            .height(50.dp),
+        colors = if (mode == selected)
+            ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+        else ButtonDefaults.buttonColors()
     ) {
         Text(buttonText)
     }
 }
 
+// Popis: Prepinanie jazyka aplikácie
 @Composable
 fun LanguageSwitcher(context: Context) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(stringResource(R.string.language), color = Color.White)
         Spacer(modifier = Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            LanguageButton(context, "sk", "🇸🇰 SK")
-            LanguageButton(context, "en", "🇬🇧 EN")
+            LanguageButton(context, stringResource(R.string.sk), stringResource(R.string.sk_sk))
+            LanguageButton(context, stringResource(R.string.en), stringResource(R.string.en_gb))
         }
     }
 }
 
+// Popis: Tlačidlo na zmenu jazyka
 @Composable
 fun LanguageButton(context: Context, lang: String, label: String) {
     Button(
@@ -160,40 +202,55 @@ fun LanguageButton(context: Context, lang: String, label: String) {
             LanguagePreferences.saveLanguage(context, lang)
             (context as Activity).recreate()
         },
-        modifier = Modifier.width(100.dp).height(50.dp)
+        modifier = Modifier
+            .width(100.dp)
+            .height(50.dp)
     ) { Text(label) }
 }
 
+// Popis: Štartovacie tlačidlo na spustenie hry
 @Composable
 fun StartButton(selectedPlayers: Int, selectedGridSize: Int, selectedMode: String, onStartGame: (Int, Int, String) -> Unit) {
     val context = LocalContext.current
     Button(
         onClick = { SoundPlayer.playStartSound(context); onStartGame(selectedPlayers, selectedGridSize, selectedMode) },
-        modifier = Modifier.fillMaxWidth().height(50.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
     ) {
         Text(stringResource(R.string.spustit_hru))
     }
 }
 
+// Popis: Tlačidlá pre výber počtu hráčov
 @Composable
 fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
     val context = LocalContext.current
     Button(
         onClick = { SoundPlayer.playButtonSound(context); onClick() },
-        modifier = Modifier.width(120.dp).height(50.dp),
-        colors = if (player == selected) ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)) else ButtonDefaults.buttonColors()
+        modifier = Modifier
+            .width(120.dp)
+            .height(50.dp),
+        colors = if (player == selected)
+            ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+        else ButtonDefaults.buttonColors()
     ) {
         Text("$player" + stringResource(R.string.hrac) + if (player == 2) "i" else "")
     }
 }
 
+// Popis: Tlačidlá pre výber veľkosti mriežky
 @Composable
 fun GridButton(size: Int, selected: Int, onClick: () -> Unit) {
     val context = LocalContext.current
     Button(
         onClick = { SoundPlayer.playButtonSound(context); onClick() },
-        modifier = Modifier.width(120.dp).height(50.dp),
-        colors = if (size == selected) ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)) else ButtonDefaults.buttonColors()
+        modifier = Modifier
+            .width(120.dp)
+            .height(50.dp),
+        colors = if (size == selected)
+            ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9))
+        else ButtonDefaults.buttonColors()
     ) {
         Text("4×$size")
     }
