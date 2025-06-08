@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MemoryMatch</string>
     <string name="memory_match">Pamäťova hra</string>
@@ -9,11 +10,11 @@
     <string name="bodov_hr_2">"bodov | Hráč 2 = "</string>
     <string name="bodov">" bodov"</string>
     <string name="cas">Čas:</string>
-    <string name="language">Language</string>
-    <string name="game_over"> Game Over!</string>
-    <string name="attempts">Attempts</string>
-    <string name="player_1_wins"> Player 1 Wins!</string>
-    <string name="player_2_wins"> Player 2 Wins!</string>
-    <string name="draw"> Draw!</string>
-    <string name="back_to_menu">Back to Menu</string>
+    <string name="language">Jazyk</string>
+    <string name="game_over">Koniec hry!</string>
+    <string name="attempts">Pokusy</string>
+    <string name="player_1_wins">Hráč 1 vyhráva!</string>
+    <string name="player_2_wins">Hráč 2 vyhráva!</string>
+    <string name="draw">Remiza!</string>
+    <string name="back_to_menu">Späť do menu</string>
 </resources>

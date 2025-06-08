@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MemoryMatch</string>
+    <string name="memory_match">MemoryMatch</string>
+    <string name="pocet_hracov">Number of players:</string>
+    <string name="velkost_mriezky">Grid size:</string>
+    <string name="spustit_hru">"Start "</string>
+    <string name="hrac">player</string>
+    <string name="hrac_1">Player 1 =</string>
+    <string name="bodov_hr_2">points | Player 2 =</string>
+    <string name="bodov">point</string>
+    <string name="cas">Time:</string>
+    <string name="language">Language</string>
+    <string name="game_over">" Game Over!"</string>
+    <string name="attempts">Attempts</string>
+    <string name="player_1_wins">" Player 1 Wins!"</string>
+    <string name="player_2_wins">" Player 2 Wins!"</string>
+    <string name="draw">" Draw!"</string>
+    <string name="back_to_menu">Back to Menu</string>
+</resources>

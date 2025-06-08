@@ -1,5 +1,7 @@
 package com.example.memorymatch.ui.screens
 
+import android.app.Activity
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,9 +18,12 @@ import androidx.compose.ui.unit.sp
 import com.example.memorymatch.ui.background.VideoBackground
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.example.memorymatch.R
+import com.example.memorymatch.data.LanguagePreferences
 
 @Composable
-fun MainMenuScreen(onStartGame: (Int, Int) -> Unit, onStatistics: () -> Unit) {
+fun MainMenuScreen(onStartGame: (Int, Int) -> Unit) {
     var selectedPlayers by rememberSaveable { mutableStateOf(1) }
     var selectedGridSize by rememberSaveable { mutableStateOf(4) }
     val context = LocalContext.current
@@ -47,7 +52,7 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit, onStatistics: () -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 GridSelection(selectedGridSize) { selectedGridSize = it }
                 Spacer(modifier = Modifier.height(32.dp))
-                StartButtons(selectedPlayers, selectedGridSize, onStartGame, onStatistics)
+                StartButtons(selectedPlayers, selectedGridSize, onStartGame)
             }
         } else {
             // Ландшафтная ориентация — окончательная чистая версия
@@ -69,7 +74,7 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit, onStatistics: () -> Unit) {
                     GridSelection(selectedGridSize) { selectedGridSize = it }
                 }
 
-                StartButtons(selectedPlayers, selectedGridSize, onStartGame, onStatistics)
+                StartButtons(selectedPlayers, selectedGridSize, onStartGame)
             }
         }
     }
@@ -78,7 +83,7 @@ fun MainMenuScreen(onStartGame: (Int, Int) -> Unit, onStatistics: () -> Unit) {
 @Composable
 fun Title() {
     Text(
-        text = "Memory Match",
+        text = stringResource(R.string.memory_match),
         fontSize = 50.sp,
         color = Color.White,
         modifier = Modifier.shadow(2.dp)
@@ -89,7 +94,7 @@ fun Title() {
 fun PlayerSelection(selected: Int, onSelect: (Int) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = "Počet hráčov:",
+            text = stringResource(R.string.pocet_hracov),
             fontSize = 30.sp,
             color = Color.White,
             modifier = Modifier.shadow(2.dp)
@@ -106,7 +111,7 @@ fun PlayerSelection(selected: Int, onSelect: (Int) -> Unit) {
 fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = "Veľkosť mriežky:",
+            text = stringResource(R.string.velkost_mriezky),
             fontSize = 30.sp,
             color = Color.White,
             modifier = Modifier.shadow(2.dp)
@@ -121,27 +126,66 @@ fun GridSelection(selected: Int, onSelect: (Int) -> Unit) {
 }
 
 @Composable
-fun StartButtons(selectedPlayers: Int, selectedGridSize: Int, onStartGame: (Int, Int) -> Unit, onStatistics: () -> Unit) {
-    Button(
-        onClick = { onStartGame(selectedPlayers, selectedGridSize) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-    ) {
-        Text("Spustiť hru")
-    }
+fun StartButtons(
+    selectedPlayers: Int,
+    selectedGridSize: Int,
+    onStartGame: (Int, Int) -> Unit,
+) {
+    val context = LocalContext.current
 
-    Spacer(modifier = Modifier.height(24.dp))
+    Column {
+        Button(
+            onClick = { onStartGame(selectedPlayers, selectedGridSize) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text(stringResource(R.string.spustit_hru))
+        }
 
-    Button(
-        onClick = onStatistics,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-    ) {
-        Text("Statistika")
+        Spacer(modifier = Modifier.height(24.dp))
+
+        LanguageSwitcher(context)
     }
 }
+@Composable
+fun LanguageSwitcher(context: Context) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.language), color = Color.White)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = {
+                    LanguagePreferences.saveLanguage(context, "sk")
+                    (context as Activity).recreate()
+                },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text("🇸🇰 SK")
+            }
+
+            Button(
+                onClick = {
+                    LanguagePreferences.saveLanguage(context, "en")
+                    (context as Activity).recreate()
+                },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text("🇬🇧 EN")
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
@@ -155,7 +199,7 @@ fun PlayerButton(player: Int, selected: Int, onClick: () -> Unit) {
         else
             ButtonDefaults.buttonColors()
     ) {
-        Text("$player hráč" + if (player == 2) "i" else "")
+        Text("$player" + stringResource(R.string.hrac) + if (player == 2) "i" else "")
     }
 }
 

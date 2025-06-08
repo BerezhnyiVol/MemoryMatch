@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,9 +86,14 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     var gameOver by remember { mutableStateOf(false) }
     var elapsedTime by remember { mutableStateOf(0) }
     var attempts by remember { mutableStateOf(0) }
+    var gameStarted by remember { mutableStateOf(false) }
 
-    LaunchedEffect(players, gameOver) {
-        if (players == 1 && !gameOver) {
+    LaunchedEffect(Unit) {
+        gameStarted = true
+    }
+
+    LaunchedEffect(gameStarted, players, gameOver) {
+        if ( gameStarted && !gameOver) {
             while (isActive) {
                 delay(1000)
                 elapsedTime++
@@ -125,7 +131,6 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Верхняя панель
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -134,52 +139,59 @@ fun GameScreen(players: Int, gridSize: Int, onBackToMenu: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBackToMenu) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Späť")
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Text(
-                text = "Čas: ${elapsedTime}s",
-                fontSize = 18.sp
-            )
+            Text(text = stringResource(R.string.cas) + " ${elapsedTime}s", fontSize = 18.sp)
 
             Spacer(modifier = Modifier.weight(1f))
 
             if (players == 2) {
                 Text(
-                    text = "Hráč 1 = $p1Score bodov | Hráč 2 = $p2Score bodov",
+                    text = stringResource(R.string.hrac_1) + "$p1Score" +
+                            stringResource(R.string.bodov_hr_2) + "$p2Score" +
+                            stringResource(R.string.bodov),
                     fontSize = 16.sp
                 )
             }
         }
 
-        // Плашка результата после окончания игры
         if (gameOver) {
-            Column(
-                modifier = Modifier.align(Alignment.TopCenter).padding(top = 56.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (players == 1) {
-                    Text("🎉 Gratulujeme!", fontSize = 22.sp)
-                    Text("Čas: ${elapsedTime} sekúnd", fontSize = 18.sp)
-                    Text("Počet pokusov: $attempts", fontSize = 18.sp)
-                } else {
-                    val winnerText = when {
-                        p1Score > p2Score -> "🎉 Vyhral hráč 1!"
-                        p2Score > p1Score -> "🎉 Vyhral hráč 2!"
-                        else -> "🤝 Remíza!"
+            AlertDialog(
+                onDismissRequest = { onBackToMenu() },
+                title = { Text(text = stringResource(R.string.game_over), fontSize = 26.sp) },
+                text = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (players == 2) {
+                            val winnerText = when {
+                                p1Score > p2Score -> stringResource(R.string.player_1_wins)
+                                p2Score > p1Score -> stringResource(R.string.player_2_wins)
+                                else -> stringResource(R.string.draw)
+                            }
+                            Text(winnerText, fontSize = 22.sp)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                        Text("${stringResource(R.string.cas)}: ${elapsedTime} s", fontSize = 20.sp)
+                        Text("${stringResource(R.string.attempts)}: $attempts", fontSize = 20.sp)
                     }
-                    Text(winnerText, fontSize = 22.sp)
+                },
+                confirmButton = {
+                    Button(onClick = { onBackToMenu() }) {
+                        Text(stringResource(R.string.back_to_menu))
+                    }
                 }
-            }
+            )
         }
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(columns),
-            modifier = Modifier.fillMaxSize().padding(top = 56.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 56.dp),
             horizontalArrangement = Arrangement.spacedBy(spacing),
-            verticalArrangement = Arrangement.spacedBy(spacing)
+            verticalArrangement = Arrangement.Center,
         ) {
             items(cardsState.size) { index ->
                 val card = cardsState[index]
@@ -237,7 +249,9 @@ fun MemoryCard(
                 painter = painterResource(id = image),
                 contentDescription = null,
                 contentScale = ContentScale.Inside,
-                modifier = Modifier.fillMaxSize().padding(8.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
             )
         }
     }
